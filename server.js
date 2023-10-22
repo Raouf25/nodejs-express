@@ -16,9 +16,27 @@ const equipements = [
   { id: 8, nom: 'Equipement H', etat: 'off' }
 ];
 
-// Route pour obtenir la liste des équipements
 app.get('/equipements', (req, res) => {
-  res.json(equipements);
+  res.json(equipements); 
+});
+
+
+// Route pour obtenir la liste des équipements
+app.get('/equipements-sse', (req, res) => {
+ res.setHeader('Content-Type', 'text/event-stream')
+ res.setHeader('Access-Control-Allow-Origin', '*')
+
+ const intervalId = setInterval(()=>{
+  const data = JSON.stringify(equipements);
+  res.write(`data : ${data} \n`)
+ },1000)
+
+ res.on('close', ()=>{
+  close.log('Client closed connection')
+  clearInterval(intervalId)
+  res.end()
+ })
+
 });
 
 // Route pour obtenir un équipement par son ID
