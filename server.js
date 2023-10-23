@@ -77,6 +77,43 @@ app.put('/equipements/:id', (req, res) => {
   res.status(200).json(equipements[index])
 })
 
+// Ajoutez cette route pour simuler les mises à jour aléatoires des équipements
+app.get('/simulate-equipment-updates', (req, res) => {
+  // Définissez la durée totale en secondes pendant laquelle vous souhaitez simuler les mises à jour
+  const totalSeconds = 180;
+
+  // Créez un tableau pour stocker les mises à jour d'équipements
+  const updates = [];
+
+  // Créez une fonction pour générer une mise à jour aléatoire de l'équipement
+  function simulateEquipmentUpdate() {
+    // Obtenez un identifiant d'équipement aléatoire
+    const randomId = Math.floor(Math.random() * equipements.length) + 1;
+    
+    // Obtenez un état d'équipement aléatoire (on ou off)
+    const randomEtat = Math.random() < 0.5 ? 'on' : 'off';
+
+    // Mettez à jour l'équipement aléatoire avec le nouvel état
+    const equipementIndex = equipements.findIndex(e => e.id === randomId);
+    if (equipementIndex !== -1) {
+      equipements[equipementIndex].etat = randomEtat;
+    }
+
+    // Ajoutez la mise à jour au tableau d'updates
+    updates.push({ id: randomId, etat: randomEtat });
+  }
+
+  // Créez un intervalle pour simuler les mises à jour
+  const updateInterval = setInterval(simulateEquipmentUpdate, 1000);
+
+  // Arrêtez la simulation après la durée spécifiée
+  setTimeout(() => {
+    clearInterval(updateInterval);
+    res.json({ updates });
+  }, totalSeconds * 1000);
+});
+
+
 
 // Route pour supprimer un équipement par son ID
 app.delete('/equipements/:id', (req, res) => {
